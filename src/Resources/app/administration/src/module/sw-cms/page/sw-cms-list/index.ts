@@ -75,6 +75,7 @@ Shopware.Component.override('sw-cms-list', {
                 message: this.$t('frosh-cms-import-export.notification.importSuccess', {
                     name: result.name,
                     mediaCount: result.mediaCount,
+                    reusedMediaCount: result.reusedMediaCount,
                 }),
             });
 

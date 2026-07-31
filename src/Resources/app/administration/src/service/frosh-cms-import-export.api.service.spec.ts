@@ -78,12 +78,12 @@ describe('frosh-cms-import-export.api.service', () => {
     });
 
     it('uploads the archive as multipart form data', async () => {
-        httpClient.post.mockResolvedValue({ data: { cmsPageId: 'new-id', name: 'Hero', mediaCount: 2, warnings: [] } });
+        httpClient.post.mockResolvedValue({ data: { cmsPageId: 'new-id', name: 'Hero', mediaCount: 2, reusedMediaCount: 1, warnings: [] } });
         const file = new File(['zip'], 'cms-page-hero-layout.zip');
 
         const result = await service.importPage(file, 'Renamed layout');
 
-        expect(result).toEqual({ cmsPageId: 'new-id', name: 'Hero', mediaCount: 2, warnings: [] });
+        expect(result).toEqual({ cmsPageId: 'new-id', name: 'Hero', mediaCount: 2, reusedMediaCount: 1, warnings: [] });
 
         const [
             url,
@@ -98,7 +98,7 @@ describe('frosh-cms-import-export.api.service', () => {
     });
 
     it('omits the name when none was given so the archive name is kept', async () => {
-        httpClient.post.mockResolvedValue({ data: { cmsPageId: 'new-id', name: 'Hero', mediaCount: 0, warnings: [] } });
+        httpClient.post.mockResolvedValue({ data: { cmsPageId: 'new-id', name: 'Hero', mediaCount: 0, reusedMediaCount: 0, warnings: [] } });
 
         await service.importPage(new File(['zip'], 'cms-page.zip'));
 

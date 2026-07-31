@@ -48,10 +48,11 @@ class ImportCmsPageCommand extends Command
         }
 
         $io->success(\sprintf(
-            'Imported layout "%s" (%s) with %d media file(s)',
+            'Imported layout "%s" (%s) with %d media file(s), %d reused from the media library',
             $result->name,
             $result->cmsPageId,
-            $result->mediaCount
+            $result->mediaCount,
+            $result->reusedMediaCount
         ));
 
         return self::SUCCESS;

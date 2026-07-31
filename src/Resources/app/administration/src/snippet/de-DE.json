@@ -15,7 +15,7 @@
         "notification": {
             "exportSuccess": "Das Layout \"{name}\" wurde exportiert.",
             "exportError": "Das Layout konnte nicht exportiert werden: {error}",
-            "importSuccess": "Das Layout \"{name}\" wurde mit {mediaCount} Bild(ern) importiert.",
+            "importSuccess": "Das Layout \"{name}\" wurde mit {mediaCount} Bild(ern) importiert, davon {reusedMediaCount} aus der Mediathek wiederverwendet.",
             "importError": "Das Archiv konnte nicht importiert werden: {error}"
         }
     }

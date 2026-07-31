@@ -15,7 +15,7 @@
         "notification": {
             "exportSuccess": "The layout \"{name}\" has been exported.",
             "exportError": "The layout could not be exported: {error}",
-            "importSuccess": "The layout \"{name}\" has been imported with {mediaCount} image(s).",
+            "importSuccess": "The layout \"{name}\" has been imported with {mediaCount} image(s), {reusedMediaCount} of them reused from the media library.",
             "importError": "The archive could not be imported: {error}"
         }
     }

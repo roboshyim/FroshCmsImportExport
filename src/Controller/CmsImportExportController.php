@@ -81,6 +81,7 @@ class CmsImportExportController extends AbstractController
             'cmsPageId' => $result->cmsPageId,
             'name' => $result->name,
             'mediaCount' => $result->mediaCount,
+            'reusedMediaCount' => $result->reusedMediaCount,
             'warnings' => $result->warnings,
         ]);
     }

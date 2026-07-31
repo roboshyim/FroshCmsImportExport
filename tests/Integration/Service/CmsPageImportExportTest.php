@@ -15,6 +15,7 @@ use Shopware\Core\Content\Media\MediaService;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsFilter;
 use Shopware\Core\Framework\Test\TestCaseBase\IntegrationTestBehaviour;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\Filesystem\Filesystem;
@@ -133,19 +134,52 @@ class CmsPageImportExportTest extends TestCase
         static::assertSame('image', $slot->getType());
     }
 
-    public function testImportCopiesTheImagesInsteadOfReusingTheOriginals(): void
+    public function testImportReusesAnImageThatIsAlreadyInTheMediaLibrary(): void
     {
-        $mediaId = $this->createMediaWithFile('frosh-copy');
-        $cmsPageId = $this->createCmsPage('Copy layout', $mediaId);
+        $mediaId = $this->createMediaWithFile('frosh-reuse');
+        $cmsPageId = $this->createCmsPage('Reuse layout', $mediaId);
 
         $result = $this->importService->import($this->export($cmsPageId)->filePath, $this->context);
 
-        $imported = $this->loadCmsPage($result->cmsPageId);
-        $importedMediaId = $imported->getPreviewMediaId();
+        static::assertSame(1, $result->mediaCount);
+        static::assertSame(1, $result->reusedMediaCount);
+        static::assertSame($mediaId, $this->loadCmsPage($result->cmsPageId)->getPreviewMediaId());
+    }
 
+    public function testImportCreatesTheImageWhenNothingMatchesItsContent(): void
+    {
+        $mediaId = $this->createMediaWithFile('frosh-unknown');
+        $cmsPageId = $this->createCmsPage('Unknown image layout', $mediaId);
+        $archivePath = $this->export($cmsPageId)->filePath;
+
+        // Removing the source layout and its image leaves the archive as the only place the bytes exist.
+        $this->cmsPageRepository->delete([['id' => $cmsPageId]], $this->context);
+        $this->mediaRepository->delete([['id' => $mediaId]], $this->context);
+
+        $result = $this->importService->import($archivePath, $this->context);
+
+        static::assertSame(1, $result->mediaCount);
+        static::assertSame(0, $result->reusedMediaCount);
+
+        $importedMediaId = $this->loadCmsPage($result->cmsPageId)->getPreviewMediaId();
         static::assertNotNull($importedMediaId);
         static::assertNotSame($mediaId, $importedMediaId);
         static::assertSame(self::PNG, $this->mediaService->loadFile($importedMediaId, $this->context));
+    }
+
+    public function testImportDoesNotReuseAPrivateImageForAPublicOne(): void
+    {
+        $privateMediaId = $this->createMediaWithFile('frosh-private', private: true);
+        $cmsPageId = $this->createCmsPage('Private image layout', $privateMediaId);
+        $archivePath = $this->export($cmsPageId)->filePath;
+
+        // Same bytes, but public — the private original must not be picked up as a match.
+        $this->createMediaWithFile('frosh-public-twin');
+
+        $result = $this->importService->import($archivePath, $this->context);
+
+        static::assertSame(1, $result->reusedMediaCount);
+        static::assertSame($privateMediaId, $this->loadCmsPage($result->cmsPageId)->getPreviewMediaId());
     }
 
     public function testImportRemapsMediaIdsBuriedInSlotConfigs(): void
@@ -164,17 +198,21 @@ class CmsPageImportExportTest extends TestCase
         static::assertSame($imported->getPreviewMediaId(), $config['media']['value']);
     }
 
-    public function testImportingTheSameArchiveTwiceDoesNotCollideOnFileNames(): void
+    public function testImportingTheSameArchiveRepeatedlyDoesNotGrowTheMediaLibrary(): void
     {
         $mediaId = $this->createMediaWithFile('frosh-twice');
         $archivePath = $this->export($this->createCmsPage('Twice layout', $mediaId))->filePath;
+
+        $before = $this->countMediaWithFixtureContent();
 
         $first = $this->importService->import($archivePath, $this->context);
         $second = $this->importService->import($archivePath, $this->context);
 
         static::assertNotSame($first->cmsPageId, $second->cmsPageId);
         static::assertSame(1, $second->mediaCount);
+        static::assertSame(1, $second->reusedMediaCount);
         static::assertSame([], $second->warnings);
+        static::assertSame($before, $this->countMediaWithFixtureContent());
     }
 
     public function testImportAppliesTheNameOverrideToEveryTranslation(): void
@@ -271,7 +309,7 @@ class CmsPageImportExportTest extends TestCase
         return $result;
     }
 
-    private function createMediaWithFile(string $fileName): string
+    private function createMediaWithFile(string $fileName, bool $private = false): string
     {
         return $this->mediaService->saveFile(
             self::PNG,
@@ -281,8 +319,16 @@ class CmsPageImportExportTest extends TestCase
             $this->context,
             'cms_page',
             null,
-            false
+            $private
         );
+    }
+
+    private function countMediaWithFixtureContent(): int
+    {
+        $criteria = new Criteria();
+        $criteria->addFilter(new EqualsFilter('fileHash', md5(self::PNG)));
+
+        return $this->mediaRepository->searchIds($criteria, $this->context)->getTotal();
     }
 
     /**

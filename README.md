@@ -22,9 +22,13 @@ language id, so an archive stays portable between shops that generated different
 ## What happens on import
 
 * Page, sections, blocks and slots get **fresh UUIDs**, so importing an archive into the shop it came from creates a
-  copy instead of overwriting the original.
-* Every image is stored as a **new media entity** in the *CMS Media* folder; file names are de-duplicated, so
-  importing the same archive twice does not collide.
+  copy instead of overwriting the original. Images are the deliberate exception — see media reuse below.
+* Images are **matched against the media library by content** before anything is created. Shopware keeps an MD5 of
+  every uploaded file in `media.file_hash` (a generated, indexed column over `meta_data.hash`, written
+  synchronously by the `FileSaver`), and the import hashes the bytes in the archive the same way. An exact match is
+  reused; only genuinely new images become new media entities in the *CMS Media* folder. Importing the same archive
+  repeatedly therefore does not grow the media library.
+  Private and public media never match each other, even with identical content.
 * Media references are rewritten everywhere they occur — the `previewMediaId` / `backgroundMediaId` foreign keys as
   well as ids buried inside slot configs (`config.media.value`, `config.sliderItems.value[].mediaId`, and whatever
   a third-party element stores).

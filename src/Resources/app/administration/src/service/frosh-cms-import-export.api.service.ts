@@ -7,6 +7,7 @@ export interface CmsImportResult {
     cmsPageId: string;
     name: string;
     mediaCount: number;
+    reusedMediaCount: number;
     warnings: string[];
 }
 
