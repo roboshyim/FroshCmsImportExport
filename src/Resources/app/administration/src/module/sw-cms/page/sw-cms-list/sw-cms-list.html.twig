@@ -1,0 +1,76 @@
+{% block sw_cms_list_toolbar %}
+<template #smart-bar-header>
+    <h2>{{ $t('sw-cms.general.moduleTitle') }}</h2>
+</template>
+
+<template #language-switch>
+    <sw-language-switch @on-change="onChangeLanguage" />
+</template>
+
+<template #smart-bar-actions>
+    {% block sw_cms_list_toolbar_frosh_import %}
+    <mt-button
+        v-tooltip="{
+            message: $t('sw-privileges.tooltip.warning'),
+            disabled: acl.can('cms.creator'),
+            showOnDisabledElements: true
+        }"
+        class="frosh-cms-import-export__import-action"
+        variant="secondary"
+        size="default"
+        :disabled="!acl.can('cms.creator') || undefined"
+        @click="froshOnOpenImportModal"
+    >
+        {{ $t('frosh-cms-import-export.list.importLayout') }}
+    </mt-button>
+    {% endblock %}
+
+    <mt-button
+        v-tooltip="{
+            message: $t('sw-privileges.tooltip.warning'),
+            disabled: acl.can('cms.creator'),
+            showOnDisabledElements: true
+        }"
+        variant="primary"
+        :disabled="!acl.can('cms.creator') || undefined"
+        size="default"
+        @click="onCreateNewLayout"
+    >
+        {{ $t('sw-cms.general.createNewLayout') }}
+    </mt-button>
+</template>
+{% endblock %}
+
+{% block sw_cms_list_listing_list_item_option_duplicate %}
+{% parent %}
+
+<sw-context-menu-item
+    class="frosh-cms-import-export__export-action"
+    :disabled="froshIsExporting || undefined"
+    @click="froshOnExportCmsPage(cmsPage)"
+>
+    {{ $t('frosh-cms-import-export.list.exportLayout') }}
+</sw-context-menu-item>
+{% endblock %}
+
+{% block sw_cms_list_listing_list_data_grid_actions_edit_duplicate %}
+{% parent %}
+
+<sw-context-menu-item
+    class="frosh-cms-import-export__export-action"
+    :disabled="froshIsExporting || undefined"
+    @click="froshOnExportCmsPage(item)"
+>
+    {{ $t('frosh-cms-import-export.list.exportLayout') }}
+</sw-context-menu-item>
+{% endblock %}
+
+{% block sw_cms_list_delete_modal %}
+{% parent %}
+
+<frosh-cms-import-modal
+    v-if="froshShowImportModal"
+    @modal-close="froshOnCloseImportModal"
+    @import-success="froshOnImportSuccess"
+/>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% block frosh_cms_import_modal %}
+<sw-modal
+    class="frosh-cms-import-modal"
+    :title="$t('frosh-cms-import-export.modal.title')"
+    variant="small"
+    @modal-close="onCloseModal"
+>
+    {% block frosh_cms_import_modal_hint %}
+    <p class="frosh-cms-import-modal__hint">
+        {{ $t('frosh-cms-import-export.modal.hint') }}
+    </p>
+    {% endblock %}
+
+    {% block frosh_cms_import_modal_file %}
+    <sw-file-input
+        class="frosh-cms-import-modal__file"
+        :label="$t('frosh-cms-import-export.modal.fileLabel')"
+        :allowed-file-extensions="['zip']"
+        :disabled="isLoading"
+        @update:value="onFileSelected"
+    />
+    {% endblock %}
+
+    {% block frosh_cms_import_modal_name %}
+    <mt-text-field
+        v-model="name"
+        class="frosh-cms-import-modal__name"
+        :label="$t('frosh-cms-import-export.modal.nameLabel')"
+        :placeholder="$t('frosh-cms-import-export.modal.namePlaceholder')"
+        :disabled="isLoading"
+    />
+    {% endblock %}
+
+    {% block frosh_cms_import_modal_footer %}
+    <template #modal-footer>
+        {% block frosh_cms_import_modal_footer_cancel %}
+        <mt-button
+            size="small"
+            variant="secondary"
+            :disabled="isLoading || undefined"
+            @click="onCloseModal"
+        >
+            {{ $t('global.default.cancel') }}
+        </mt-button>
+        {% endblock %}
+
+        {% block frosh_cms_import_modal_footer_confirm %}
+        <mt-button
+            class="frosh-cms-import-modal__confirm"
+            variant="primary"
+            size="small"
+            :is-loading="isLoading"
+            :disabled="isImportDisabled || undefined"
+            @click="onImport"
+        >
+            {{ $t('frosh-cms-import-export.modal.confirm') }}
+        </mt-button>
+        {% endblock %}
+    </template>
+    {% endblock %}
+</sw-modal>
+{% endblock %}

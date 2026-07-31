@@ -1,0 +1,7 @@
+/vendor/
+/node_modules/
+/var/
+/src/Resources/app/administration/.tmp/
+/.phpunit.cache/
+/src/Resources/public/administration/
+/composer.lock

@@ -1,0 +1,22 @@
+includes:
+    # Shopware's own type extensions (DAL collections, entity existence, field flags).
+    # The core `rules.neon` is deliberately not included: it enforces platform-internal conventions such as
+    # `#[Package]` attributes and `Shopware\Tests\…` test namespaces, which do not apply to a third-party plugin.
+    - ../../../src/Core/DevOps/StaticAnalyze/PHPStan/extension.neon
+
+parameters:
+    level: 8
+    phpVersion: 80200
+    tmpDir: var/cache/phpstan
+    treatPhpDocTypesAsCertain: false
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - node_modules/*
+        # Integration tests pull their collaborators out of the Symfony container, whose service types are only
+        # known to PHPStan through a compiled container XML. The platform's static-analyze kernel boots without
+        # plugins, so plugin services cannot appear there. These tests are covered by running them instead.
+        - tests/Integration/*
+    bootstrapFiles:
+        - ../../../src/Core/DevOps/StaticAnalyze/phpstan-bootstrap.php

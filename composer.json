@@ -1,0 +1,38 @@
+{
+    "name": "frosh/cms-import-export",
+    "description": "Import and export entire Shopware CMS pages as self-contained ZIP archives",
+    "version": "1.0.0",
+    "type": "shopware-platform-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Friends of Shopware",
+            "homepage": "https://github.com/FriendsOfShopware"
+        }
+    ],
+    "require": {
+        "shopware/core": "~6.7.0"
+    },
+    "extra": {
+        "shopware-plugin-class": "Frosh\\CmsImportExport\\FroshCmsImportExport",
+        "copyright": "(c) by Friends of Shopware",
+        "label": {
+            "de-DE": "Frosh CMS Import/Export",
+            "en-GB": "Frosh CMS Import/Export"
+        },
+        "description": {
+            "de-DE": "Exportiert und importiert komplette Erlebniswelten inklusive aller Bilder als ZIP-Archiv.",
+            "en-GB": "Exports and imports entire CMS layouts including all images as a ZIP archive."
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Frosh\\CmsImportExport\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Frosh\\CmsImportExport\\Test\\": "tests/"
+        }
+    }
+}

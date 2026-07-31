@@ -1,0 +1,52 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="Frosh\CmsImportExport\Service\EntitySerializer"/>
+
+        <service id="Frosh\CmsImportExport\Service\MediaReferenceCollector"/>
+
+        <service id="Frosh\CmsImportExport\Service\CmsPageExportService">
+            <argument type="service" id="cms_page.repository"/>
+            <argument type="service" id="media.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Media\MediaService"/>
+            <argument type="service" id="Shopware\Core\Framework\DataAbstractionLayer\DefinitionInstanceRegistry"/>
+            <argument type="service" id="Frosh\CmsImportExport\Service\EntitySerializer"/>
+            <argument type="service" id="Frosh\CmsImportExport\Service\MediaReferenceCollector"/>
+            <argument type="service" id="Shopware\Core\System\Locale\LanguageLocaleCodeProvider"/>
+            <argument type="service" id="clock"/>
+            <argument>%kernel.shopware_version%</argument>
+        </service>
+
+        <service id="Frosh\CmsImportExport\Service\CmsPageImportService">
+            <argument type="service" id="cms_page.repository"/>
+            <argument type="service" id="media.repository"/>
+            <argument type="service" id="media_folder.repository"/>
+            <argument type="service" id="language.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Media\MediaService"/>
+            <argument type="service" id="Shopware\Core\Content\Media\File\FileNameProvider"/>
+            <argument type="service" id="Frosh\CmsImportExport\Service\MediaReferenceCollector"/>
+        </service>
+
+        <service id="Frosh\CmsImportExport\Command\ExportCmsPageCommand">
+            <argument type="service" id="Frosh\CmsImportExport\Service\CmsPageExportService"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Frosh\CmsImportExport\Command\ImportCmsPageCommand">
+            <argument type="service" id="Frosh\CmsImportExport\Service\CmsPageImportService"/>
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Frosh\CmsImportExport\Controller\CmsImportExportController" public="true">
+            <argument type="service" id="Frosh\CmsImportExport\Service\CmsPageExportService"/>
+            <argument type="service" id="Frosh\CmsImportExport\Service\CmsPageImportService"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+    </services>
+</container>

@@ -1,0 +1,22 @@
+{
+    "frosh-cms-import-export": {
+        "list": {
+            "importLayout": "Import layout",
+            "exportLayout": "Export layout"
+        },
+        "modal": {
+            "title": "Import layout",
+            "hint": "Select a ZIP archive that was created with the layout export. It contains the layout configuration and all of its images.",
+            "fileLabel": "Archive",
+            "nameLabel": "Name",
+            "namePlaceholder": "Keep the name from the archive",
+            "confirm": "Import"
+        },
+        "notification": {
+            "exportSuccess": "The layout \"{name}\" has been exported.",
+            "exportError": "The layout could not be exported: {error}",
+            "importSuccess": "The layout \"{name}\" has been imported with {mediaCount} image(s).",
+            "importError": "The archive could not be imported: {error}"
+        }
+    }
+}
